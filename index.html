@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="data:," />
   <title>Learn English with AMET</title>
+  <script>
+    (function () {
+      var theme = "system";
+      try {
+        var saved = JSON.parse(localStorage.getItem("learn-english-progress-v1") || "null");
+        var value = saved && saved.preferences && saved.preferences.theme;
+        if (value === "system" || value === "light" || value === "dark") theme = value;
+      } catch (error) {
+        /* keep system default */
+      }
+      var dark =
+        theme === "dark" ||
+        (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", dark);
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script>
@@ -40,7 +56,7 @@
       --foreground: 210 40% 96%;
       --card: 222 47% 11%;
       --muted: 217 33% 17%;
-      --primary: 217 91% 60%;
+      --primary: 221 83% 53%;
       --border: 217 33% 24%;
     }
     body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -106,7 +122,7 @@
       </div>
     </section>
 
-    <p class="mt-6 text-xs text-slate-400 dark:text-slate-500">Umpan balik di halaman ini berupa kunci jawaban statis. Tutor AI tetap tersedia lewat skill di project ini.</p>
+    <p class="mt-6 text-xs text-slate-400 dark:text-slate-400">Umpan balik di halaman ini berupa kunci jawaban statis. Tutor AI tetap tersedia lewat skill di project ini.</p>
   </div>
 
   <div id="name-modal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4" style="display: none" role="dialog" aria-modal="true" aria-labelledby="name-modal-title">
@@ -227,9 +243,15 @@
       button.querySelector("i").className = `fa-solid ${state.icon}`;
     }
 
-    systemThemeQuery.addEventListener("change", () => {
+    function applyThemeOnSystemChange() {
       if (themePreference(progress.preferences) === "system") applyTheme();
-    });
+    }
+
+    if (typeof systemThemeQuery.addEventListener === "function") {
+      systemThemeQuery.addEventListener("change", applyThemeOnSystemChange);
+    } else if (typeof systemThemeQuery.addListener === "function") {
+      systemThemeQuery.addListener(applyThemeOnSystemChange);
+    }
 
     const activeLesson = () => LESSONS[progress.level];
     const activeTopic = () => activeLesson().topics.find((t) => t.id === activeTopicId) || activeLesson().topics[0];
