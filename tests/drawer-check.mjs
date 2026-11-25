@@ -9,6 +9,7 @@ for (const token of [
   'id="topic-toggle"', 'id="topic-sidebar"', 'id="topic-close"', 'id="topic-backdrop"',
   'aria-controls="topic-sidebar"', 'aria-expanded="false"', "fa-bars", "fa-xmark",
   "-translate-x-full", "md:translate-x-0", "md:static", "z-40", "z-50",
+  "invisible", "md:visible",
   "// DRAWER_BEHAVIOR_START", "// DRAWER_BEHAVIOR_END",
   'byId("topic-toggle").addEventListener("click", openTopicDrawer)',
   'byId("topic-backdrop").addEventListener("click"',
@@ -26,7 +27,7 @@ const drawerSource = app.slice(start, end);
 
 function harness({ matches = true, legacyListener = false } = {}) {
   const bodyClasses = new Set();
-  const sidebarClasses = new Set(["-translate-x-full"]);
+  const sidebarClasses = new Set(["-translate-x-full", "invisible"]);
   const toggle = { attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, focus() { doc.activeElement = this; } };
   const close = { focus() { doc.activeElement = this; } };
   let focusables = [close];
@@ -34,6 +35,7 @@ function harness({ matches = true, legacyListener = false } = {}) {
   const sidebar = {
     classList: { add: (c) => sidebarClasses.add(c), remove: (c) => sidebarClasses.delete(c) },
     querySelectorAll: () => focusables,
+    contains: (element) => focusables.includes(element),
   };
   const doc = {
     activeElement: null,
@@ -81,6 +83,8 @@ function harness({ matches = true, legacyListener = false } = {}) {
   assert.equal(h.backdrop.hidden, false);
   assert.ok(h.sidebarClasses.has("translate-x-0"));
   assert.ok(!h.sidebarClasses.has("-translate-x-full"));
+  assert.ok(h.sidebarClasses.has("visible"), "open drawer must be visible");
+  assert.ok(!h.sidebarClasses.has("invisible"), "open drawer must not stay invisible");
   assert.equal(h.toggle.attrs["aria-expanded"], "true");
   assert.ok(h.bodyClasses.has("overflow-hidden"));
   assert.equal(h.doc.activeElement, h.close);
@@ -88,6 +92,8 @@ function harness({ matches = true, legacyListener = false } = {}) {
   h.closeTopicDrawer();
   assert.equal(h.backdrop.hidden, true);
   assert.ok(h.sidebarClasses.has("-translate-x-full"));
+  assert.ok(h.sidebarClasses.has("invisible"), "closed mobile drawer must leave the tab order");
+  assert.ok(!h.sidebarClasses.has("visible"));
   assert.equal(h.toggle.attrs["aria-expanded"], "false");
   assert.ok(!h.bodyClasses.has("overflow-hidden"));
   assert.equal(h.doc.activeElement, h.toggle);
@@ -130,6 +136,23 @@ function harness({ matches = true, legacyListener = false } = {}) {
   h.doc.activeElement = first;
   h.onTopicDrawerKeydown({ key: "Tab", shiftKey: true, preventDefault() {} });
   assert.equal(h.doc.activeElement, last, "Shift+Tab from first must wrap to last");
+}
+{
+  const h = harness();
+  const first = { focus() { h.doc.activeElement = this; } };
+  const last = { focus() { h.doc.activeElement = this; } };
+  h.setFocusables([first, last]);
+  const outside = { focus() { h.doc.activeElement = this; } };
+  h.doc.activeElement = outside;
+  const tabEvent = { key: "Tab", shiftKey: false, prevented: false, preventDefault() { this.prevented = true; } };
+  h.onTopicDrawerKeydown(tabEvent);
+  assert.equal(h.doc.activeElement, first, "Tab from outside must re-enter drawer at first focusable");
+  assert.equal(tabEvent.prevented, true, "Tab from outside must be intercepted");
+  h.doc.activeElement = outside;
+  const shiftTabEvent = { key: "Tab", shiftKey: true, prevented: false, preventDefault() { this.prevented = true; } };
+  h.onTopicDrawerKeydown(shiftTabEvent);
+  assert.equal(h.doc.activeElement, last, "Shift+Tab from outside must re-enter drawer at last focusable");
+  assert.equal(shiftTabEvent.prevented, true, "Shift+Tab from outside must be intercepted");
 }
 {
   const clickHandler = app.slice(app.indexOf('button.addEventListener("click", () => {'), app.indexOf("container.append(button);"));

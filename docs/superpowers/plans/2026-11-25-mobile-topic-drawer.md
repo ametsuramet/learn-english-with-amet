@@ -377,6 +377,10 @@ git push origin main
 
 Pantau run GitHub Actions `deploy-pages.yml` untuk SHA `HEAD` lewat public REST API (tidak memakai `gh` yang belum terautentikasi), lalu verifikasi HTML live di `https://ametsuramet.github.io/learn-english-with-amet/` mengandung `id="topic-toggle"`, `id="topic-backdrop"`, dan `md:translate-x-0`.
 
+## Post-review correction
+
+Reviewer segar menemukan dua celah fokus yang tidak tercakup tes awal: drawer tertutup masih bisa menerima Tab karena `-translate-x-full` hanya mengubah transform, dan trap hanya menangani boundary first/last sehingga fokus bisa keluar ke kontrol di belakang backdrop. Perbaikan: `invisible md:visible` pada sidebar dengan swap `invisible`/`visible` saat buka/tutup, serta pengecekan `sidebar.contains(document.activeElement)` pada setiap `Tab`. Keduanya dibuktikan RED→GREEN di `tests/drawer-check.mjs` dan diverifikasi di browser 390px.
+
 ## Self-review
 
 - Spec coverage: breakpoint, satu list, hamburger, backdrop, close paths, fokus, resize, tema, tanpa state baru — semua ada di Task 1/2.

@@ -90,7 +90,7 @@
     </header>
 
     <main class="grid gap-6 md:grid-cols-3">
-      <section id="topic-sidebar" class="fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs -translate-x-full overflow-y-auto rounded-none border-r border-border bg-card p-5 shadow-xl transition-transform duration-200 md:static md:z-auto md:w-auto md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-lg md:border md:shadow-sm">
+      <section id="topic-sidebar" class="fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs -translate-x-full invisible overflow-y-auto rounded-none border-r border-border bg-card p-5 shadow-xl transition-transform duration-200 md:static md:z-auto md:w-auto md:max-w-none md:translate-x-0 md:overflow-visible md:visible md:rounded-lg md:border md:shadow-sm">
         <div class="mb-3 flex items-center justify-between">
           <h2 class="text-lg font-semibold">Topik</h2>
           <button id="topic-close" type="button" class="rounded-md border border-border px-2 py-1 text-sm md:hidden" aria-label="Tutup daftar topik">
@@ -317,6 +317,8 @@
       const sidebar = byId("topic-sidebar").classList;
       sidebar.remove("-translate-x-full");
       sidebar.add("translate-x-0");
+      sidebar.remove("invisible");
+      sidebar.add("visible");
       byId("topic-backdrop").hidden = false;
       byId("topic-toggle").setAttribute("aria-expanded", "true");
       document.body.classList.add("overflow-hidden");
@@ -327,6 +329,8 @@
       const sidebar = byId("topic-sidebar").classList;
       sidebar.remove("translate-x-0");
       sidebar.add("-translate-x-full");
+      sidebar.remove("visible");
+      sidebar.add("invisible");
       byId("topic-backdrop").hidden = true;
       byId("topic-toggle").setAttribute("aria-expanded", "false");
       document.body.classList.remove("overflow-hidden");
@@ -344,6 +348,11 @@
       if (!focusables.length) return;
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
+      if (!byId("topic-sidebar").contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();

@@ -58,6 +58,7 @@ progres, atau aturan unlock.
 - `isMobileDrawer()` memakai `window.matchMedia("(max-width: 767px)").matches`.
 - `openTopicDrawer()` (hanya saat mobile):
   - menghapus `-translate-x-full` dan menambah `translate-x-0` pada sidebar;
+  - menghapus `invisible` dan menambah `visible` sebelum memfokuskan drawer;
   - menampilkan backdrop;
   - men-set `aria-expanded="true"` pada hamburger;
   - mencegah scroll halaman dengan `overflow-hidden` pada `<body>`;
@@ -72,8 +73,11 @@ progres, atau aturan unlock.
 
 ### Aksesibilitas dan tema
 
+- Drawer tertutup memakai `invisible md:visible` agar tombol-tombolnya keluar dari
+  tab order di mobile, tetapi tetap normal di desktop.
 - Fokus dijaga di dalam drawer saat terbuka: `Tab`/`Shift+Tab` bersiklus di antara
-  `#topic-close` dan tombol topik yang tidak disabled.
+  `#topic-close` dan tombol topik yang tidak disabled. Bila fokus berada di luar
+  sidebar, `Tab`/`Shift+Tab` ditarik kembali ke elemen pertama/terakhir di drawer.
 - `Esc` ditangani hanya saat drawer terbuka.
 - `aria-expanded` dan `aria-controls` pada hamburger mengikuti state drawer.
 - Tidak memakai `inert` pada `#app-content` karena drawer berada di dalamnya.
