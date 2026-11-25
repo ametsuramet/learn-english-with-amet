@@ -16,4 +16,5 @@ Muat skill yang cocok sebelum menjawab. Jika level tidak disebut, tanyakan dulu.
 
 - Skill disimpan di `.opencode/skills/<id>/SKILL.md`, hanya di project ini, tanpa pemasangan global.
 - Detail koreksi, kosakata, dan latihan penutup bersumber dari `SKILL.md` masing-masing.
+- Materi baru dari sesi tutor: lihat `docs/agents/materi-dari-sesi.md`.
 - Design dan rencana berada di `docs/superpowers/`.
