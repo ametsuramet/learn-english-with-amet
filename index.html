@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>learn-english — belajar bertahap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            card: "hsl(var(--card))",
+            muted: "hsl(var(--muted))",
+            primary: "hsl(var(--primary))",
+            border: "hsl(var(--border))",
+          },
+          borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)" },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222 47% 11%;
+      --card: 0 0% 100%;
+      --muted: 210 40% 96%;
+      --primary: 221 83% 53%;
+      --border: 214 32% 91%;
+      --radius: 0.75rem;
+    }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    [data-active="true"] { outline: 2px solid hsl(var(--primary)); outline-offset: 2px; }
+  </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+  <div class="mx-auto max-w-5xl p-6">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">learn-english</h1>
+      <p class="mt-1 text-sm text-slate-500">Pilih level, baca materi, lalu cek pemahamanmu.</p>
+      <div class="mt-5 flex flex-wrap gap-2" id="level-switcher">
+        <button id="level-pemula" class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium">Pemula · A1–A2</button>
+        <button id="level-menengah" class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium">Menengah · B1–B2</button>
+        <button id="level-mahir" class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium">Lanjut · C1–C2</button>
+      </div>
+    </header>
+
+    <main class="grid gap-6 md:grid-cols-3">
+      <section class="rounded-lg border border-border bg-card p-5 shadow-sm">
+        <h2 class="mb-3 text-lg font-semibold">Topik</h2>
+        <div id="topic-list" class="flex flex-col gap-2"></div>
+      </section>
+
+      <section class="rounded-lg border border-border bg-card p-5 shadow-sm md:col-span-2">
+        <h2 class="mb-3 text-lg font-semibold">Materi</h2>
+        <div id="lesson-card"></div>
+
+        <div class="mt-6 border-t border-border pt-5">
+          <h3 class="mb-2 font-semibold">Latihan</h3>
+          <p id="exercise-prompt" class="mb-3 text-sm"></p>
+          <textarea id="exercise-input" rows="3" class="w-full rounded-md border border-border bg-background p-3 text-sm" placeholder="Tulis jawabanmu di sini..."></textarea>
+          <div class="mt-3 flex gap-2">
+            <button id="check-answer" class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white">Cek jawaban</button>
+            <button id="mark-done" class="rounded-md border border-border px-4 py-2 text-sm font-medium">Saya paham</button>
+          </div>
+          <div id="feedback" class="mt-3 rounded-md bg-muted p-3 text-sm" hidden></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="mt-6 rounded-lg border border-border bg-card p-5 shadow-sm">
+      <h2 class="mb-3 text-lg font-semibold">Progres</h2>
+      <div class="flex flex-wrap gap-3 text-sm">
+        <span class="rounded-md bg-muted px-3 py-1">XP: <strong id="progress-xp">0</strong></span>
+        <span class="rounded-md bg-muted px-3 py-1">Streak: <strong id="progress-streak">0</strong> hari</span>
+      </div>
+      <div id="progress-topics" class="mt-3 text-sm text-slate-500"></div>
+      <div class="mt-4 flex gap-2">
+        <button id="export-progress" class="rounded-md border border-border px-3 py-2 text-sm">Ekspor JSON</button>
+        <button id="reset-progress" class="rounded-md border border-border px-3 py-2 text-sm">Reset progres</button>
+      </div>
+    </section>
+
+    <p class="mt-6 text-xs text-slate-400">Umpan balik di halaman ini berupa kunci jawaban statis. Tutor AI tetap tersedia lewat skill di project ini.</p>
+  </div>
+
+  <script>
+    const LESSONS = {
+      pemula: {
+        label: "Pemula (A1–A2)",
+        topics: [
+          {
+            id: "belanja",
+            title: "Belanja di supermarket",
+            items: [
+              { en: "apple", meaning: "apel", say: "é-pel" },
+              { en: "milk", meaning: "susu", say: "milk" },
+              { en: "cashier", meaning: "kasir", say: "ka-syir" },
+            ],
+            prompt: "Terjemahkan: Aku mau beli susu besok.",
+            answer: "I want to buy milk tomorrow.",
+            checks: [
+              "Apresiasi dulu usahamu.",
+              "Bagian yang benar: \"I want\".",
+              "Perbaikan: tambahkan \"to\" setelah want.",
+              "Versi natural: I'm going to buy milk tomorrow.",
+              "Satu latihan singkat di akhir.",
+            ],
+          },
+          {
+            id: "sapaan",
+            title: "Sapaan sederhana",
+            items: [
+              { en: "Good morning", meaning: "Selamat pagi", say: "gud mor-ning" },
+              { en: "How are you?", meaning: "Apa kabar?", say: "hau ar yu" },
+              { en: "Thank you", meaning: "Terima kasih", say: "thenk yu" },
+            ],
+            prompt: "Terjemahkan: Terima kasih, saya baik.",
+            answer: "Thank you, I'm fine.",
+            checks: [
+              "Apresiasi dulu usahamu.",
+              "Tunjukkan bagian yang sudah benar.",
+              "Jelaskan alasan singkat dalam bahasa Indonesia.",
+              "Berikan versi natural sehari-hari.",
+              "Satu latihan singkat di akhir.",
+            ],
+          },
+        ],
+      },
+      menengah: {
+        label: "Menengah (B1–B2)",
+        topics: [
+          {
+            id: "pendapat",
+            title: "Menyatakan pendapat",
+            items: [
+              { en: "I completely agree with you.", meaning: "Aku benar-benar setuju denganmu.", note: "Contoh kalimat, bukan terjemahan kata per kata." },
+              { en: "see eye to eye", meaning: "sependapat", note: "Idiom: We see eye to eye on this point." },
+              { en: "on the same page", meaning: "sudah sepaham", note: "Idiom: Glad we're on the same page." },
+            ],
+            prompt: "Tulis ulang dengan lebih natural: \"I am agree with you\".",
+            answer: "I agree with you. / I completely agree with you.",
+            checks: [
+              "Perbaikan Grammar: agree bukan adjective, jadi tanpa am.",
+              "Versi Lebih Natural: beri opsi santai dan semi-formal.",
+              "Penjelasan Singkat: dalam bahasa Indonesia.",
+              "Perkenalkan 2–3 idiom dengan konteks.",
+              "Tutup dengan pertanyaan terbuka 3–4 kalimat.",
+            ],
+          },
+        ],
+      },
+      mahir: {
+        label: "Lanjut (C1–C2)",
+        topics: [
+          {
+            id: "proposal",
+            title: "Menyampaikan keberatan secara halus",
+            items: [
+              { en: "The proposal has merit, but it warrants closer scrutiny.", meaning: "", note: "Register: business / meeting — measured and decisive." },
+              { en: "merits closer scrutiny", meaning: "", note: "Collocation, lebih tajam daripada 'needs more discussion'." },
+              { en: "before we commit", meaning: "", note: "Collocation untuk menunda keputusan tanpa terdengar obstruktif." },
+            ],
+            prompt: "Rewrite in a lower-register Slack tone, keeping the same caution.",
+            answer: "Let's hold off for a bit — still looks promising, but I want one more pass.",
+            checks: [
+              "Precision & Style: ringkas dan tajam.",
+              "Collocations & Idiomatic Expressions: tepat sasaran.",
+              "Subtle Errors: preposisi, artikel, struktur kompleks.",
+              "Sertakan penilaian register.",
+              "Tutup dengan paraphrasing atau pertanyaan analitis.",
+            ],
+          },
+        ],
+      },
+    };
+
+    const STORAGE_KEY = "learn-english-progress-v1";
+
+    const progressStore = {
+      empty() {
+        return { level: "pemula", xp: 0, streak: 0, completedTopics: [], lastVisited: "" };
+      },
+      load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return this.empty();
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return this.empty();
+          const levels = ["pemula", "menengah", "mahir"];
+          return {
+            level: levels.includes(parsed.level) ? parsed.level : "pemula",
+            xp: Number.isFinite(parsed.xp) ? parsed.xp : 0,
+            streak: Number.isFinite(parsed.streak) ? parsed.streak : 0,
+            completedTopics: Array.isArray(parsed.completedTopics) ? parsed.completedTopics : [],
+            lastVisited: typeof parsed.lastVisited === "string" ? parsed.lastVisited : "",
+          };
+        } catch {
+          return this.empty();
+        }
+      },
+      save(value) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+        } catch {
+          /* localStorage unavailable: keep in-memory state */
+        }
+      },
+      clear() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+          /* nothing to remove */
+        }
+      },
+    };
+
+    let progress = progressStore.load();
+    let activeTopicId = LESSONS[progress.level].topics[0].id;
+
+    const byId = (id) => document.getElementById(id);
+    const activeLesson = () => LESSONS[progress.level];
+    const activeTopic = () => activeLesson().topics.find((t) => t.id === activeTopicId) || activeLesson().topics[0];
+
+    function renderLevels() {
+      for (const level of ["pemula", "menengah", "mahir"]) {
+        byId(`level-${level}`).dataset.active = String(level === progress.level);
+      }
+    }
+
+    function renderTopics() {
+      const container = byId("topic-list");
+      container.replaceChildren();
+      for (const topic of activeLesson().topics) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.topicId = topic.id;
+        button.dataset.active = String(topic.id === activeTopicId);
+        button.className = "rounded-md border border-border px-3 py-2 text-left text-sm";
+        button.textContent = topic.title;
+        button.addEventListener("click", () => {
+          activeTopicId = topic.id;
+          byId("feedback").hidden = true;
+          renderTopics();
+          renderLesson();
+        });
+        container.append(button);
+      }
+    }
+
+    function renderLesson() {
+      const topic = activeTopic();
+      const card = byId("lesson-card");
+      card.replaceChildren();
+
+      const title = document.createElement("h3");
+      title.className = "font-semibold";
+      title.textContent = topic.title;
+      card.append(title);
+
+      const list = document.createElement("ul");
+      list.className = "mt-3 space-y-2";
+      for (const item of topic.items) {
+        const li = document.createElement("li");
+        li.className = "rounded-md bg-muted p-3 text-sm";
+        const primary = document.createElement("div");
+        primary.className = "font-medium";
+        primary.textContent = item.en;
+        li.append(primary);
+        if (item.meaning) {
+          const meaning = document.createElement("div");
+          meaning.className = "text-slate-600";
+          meaning.textContent = `Arti: ${item.meaning}`;
+          li.append(meaning);
+        }
+        if (item.say) {
+          const say = document.createElement("div");
+          say.className = "text-slate-500";
+          say.textContent = `Cara baca: ${item.say}`;
+          li.append(say);
+        }
+        if (item.note) {
+          const note = document.createElement("div");
+          note.className = "text-slate-500";
+          note.textContent = item.note;
+          li.append(note);
+        }
+        list.append(li);
+      }
+      card.append(list);
+      byId("exercise-prompt").textContent = topic.prompt;
+      byId("exercise-input").value = "";
+    }
+
+    function renderProgress() {
+      byId("progress-xp").textContent = String(progress.xp);
+      byId("progress-streak").textContent = String(progress.streak);
+      const container = byId("progress-topics");
+      container.replaceChildren();
+      const text = document.createElement("div");
+      text.textContent = progress.completedTopics.length
+        ? `Topik selesai: ${progress.completedTopics.join(", ")}`
+        : "Belum ada topik yang ditandai selesai.";
+      container.append(text);
+    }
+
+    function renderAll() {
+      renderLevels();
+      renderTopics();
+      renderLesson();
+      renderProgress();
+    }
+
+    function selectLevel(level) {
+      progress.level = level;
+      activeTopicId = LESSONS[level].topics[0].id;
+      progressStore.save(progress);
+      byId("feedback").hidden = true;
+      renderAll();
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function nextStreak() {
+      if (!progress.lastVisited) return 1;
+      const days = (new Date(today()) - new Date(progress.lastVisited)) / 86400000;
+      if (days === 0) return progress.streak || 1;
+      if (days === 1) return progress.streak + 1;
+      return 1;
+    }
+
+    function markDone() {
+      const key = `${progress.level}:${activeTopicId}`;
+      if (!progress.completedTopics.includes(key)) {
+        progress.completedTopics.push(key);
+        progress.xp += 10;
+        progress.streak = nextStreak();
+        progress.lastVisited = today();
+        progressStore.save(progress);
+      }
+      renderProgress();
+    }
+
+    for (const level of ["pemula", "menengah", "mahir"]) {
+      byId(`level-${level}`).addEventListener("click", () => selectLevel(level));
+    }
+
+    byId("check-answer").addEventListener("click", () => {
+      const topic = activeTopic();
+      const feedback = byId("feedback");
+      feedback.replaceChildren();
+      const answer = document.createElement("div");
+      answer.className = "font-medium";
+      answer.textContent = `Kunci jawaban: ${topic.answer}`;
+      feedback.append(answer);
+      const list = document.createElement("ul");
+      list.className = "mt-2 list-disc pl-5";
+      for (const check of topic.checks) {
+        const li = document.createElement("li");
+        li.textContent = check;
+        list.append(li);
+      }
+      feedback.append(list);
+      feedback.hidden = false;
+    });
+
+    byId("mark-done").addEventListener("click", markDone);
+
+    byId("reset-progress").addEventListener("click", () => {
+      progressStore.clear();
+      progress = progressStore.empty();
+      activeTopicId = LESSONS[progress.level].topics[0].id;
+      byId("feedback").hidden = true;
+      renderAll();
+    });
+
+    byId("export-progress").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(progress, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "learn-english-progress.json";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
