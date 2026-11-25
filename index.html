@@ -40,8 +40,14 @@
 <body class="min-h-screen bg-background text-foreground">
   <div class="mx-auto max-w-5xl p-6">
     <header class="mb-8">
-      <h1 class="text-3xl font-bold tracking-tight">Learn English with AMET</h1>
-      <p class="mt-1 text-sm text-slate-500">Pilih level, baca materi, lalu cek pemahamanmu.</p>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight">Learn English with AMET</h1>
+          <p class="mt-1 text-sm text-slate-500">Pilih level, baca materi, lalu cek pemahamanmu.</p>
+          <p class="mt-1 text-sm">Halo, <strong id="greeting">pembelajar</strong>!</p>
+        </div>
+        <button id="edit-name" class="rounded-md border border-border px-3 py-2 text-sm">Ubah nama</button>
+      </div>
       <div class="mt-5 flex flex-wrap gap-2" id="level-switcher">
         <button id="level-pemula" class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium">Pemula · A1–A2</button>
         <button id="level-menengah" class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium">Menengah · B1–B2</button>
@@ -88,13 +94,24 @@
     <p class="mt-6 text-xs text-slate-400">Umpan balik di halaman ini berupa kunci jawaban statis. Tutor AI tetap tersedia lewat skill di project ini.</p>
   </div>
 
+  <div id="name-modal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4" style="display: none">
+    <div class="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-lg">
+      <h2 class="text-lg font-semibold">Kenalan dulu, yuk</h2>
+      <p class="mt-1 text-sm text-slate-500">Nama ini dipakai untuk menyapamu dan disimpan di browser ini saja.</p>
+      <label for="name-input" class="mt-4 block text-sm font-medium">Nama kamu</label>
+      <input id="name-input" type="text" autocomplete="given-name" class="mt-1 w-full rounded-md border border-border bg-background p-3 text-sm" placeholder="Tulis namamu..." />
+      <p id="name-error" class="mt-2 text-sm text-red-600" hidden>Nama tidak boleh kosong.</p>
+      <button id="name-submit" class="mt-4 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-white">Mulai belajar</button>
+    </div>
+  </div>
+
   <script src="lessons.js"></script>
   <script>
     const STORAGE_KEY = "learn-english-progress-v1";
 
     const progressStore = {
       empty() {
-        return { level: "pemula", xp: 0, streak: 0, completedTopics: [], lastVisited: "" };
+        return { name: "", level: "pemula", xp: 0, streak: 0, completedTopics: [], lastVisited: "", preferences: {} };
       },
       load() {
         try {
@@ -104,11 +121,15 @@
           if (!parsed || typeof parsed !== "object") return this.empty();
           const levels = ["pemula", "menengah", "mahir"];
           return {
+            name: typeof parsed.name === "string" ? parsed.name : "",
             level: levels.includes(parsed.level) ? parsed.level : "pemula",
             xp: Number.isFinite(parsed.xp) ? parsed.xp : 0,
             streak: Number.isFinite(parsed.streak) ? parsed.streak : 0,
             completedTopics: Array.isArray(parsed.completedTopics) ? parsed.completedTopics : [],
             lastVisited: typeof parsed.lastVisited === "string" ? parsed.lastVisited : "",
+            preferences: parsed.preferences && typeof parsed.preferences === "object" && !Array.isArray(parsed.preferences)
+              ? parsed.preferences
+              : {},
           };
         } catch {
           return this.empty();
@@ -131,36 +152,95 @@
     };
 
     let progress = progressStore.load();
-    let activeTopicId = LESSONS[progress.level].topics[0].id;
+    let activeTopicId;
 
     const byId = (id) => document.getElementById(id);
+    const LEVEL_ORDER = ["pemula", "menengah", "mahir"];
     const activeLesson = () => LESSONS[progress.level];
     const activeTopic = () => activeLesson().topics.find((t) => t.id === activeTopicId) || activeLesson().topics[0];
 
+    function isTopicUnlocked(level, index) {
+      if (index === 0) return true;
+      const previous = LESSONS[level].topics[index - 1];
+      return previous ? progress.completedTopics.includes(`${level}:${previous.id}`) : false;
+    }
+
+    function isLevelUnlocked(level) {
+      const target = LEVEL_ORDER.indexOf(level);
+      if (target <= 0) return true;
+      for (let i = 0; i < target; i += 1) {
+        const candidate = LEVEL_ORDER[i];
+        const complete = LESSONS[candidate].topics.every((topic) =>
+          progress.completedTopics.includes(`${candidate}:${topic.id}`)
+        );
+        if (!complete) return false;
+      }
+      return true;
+    }
+
+    function highestUnlockedLevel() {
+      let result = LEVEL_ORDER[0];
+      for (const level of LEVEL_ORDER) {
+        if (isLevelUnlocked(level)) result = level;
+      }
+      return result;
+    }
+
+    function firstIncompleteTopic(level) {
+      const topics = LESSONS[level].topics;
+      return topics.find((topic) => !progress.completedTopics.includes(`${level}:${topic.id}`)) || topics[topics.length - 1];
+    }
+
+    if (!isLevelUnlocked(progress.level)) {
+      progress.level = highestUnlockedLevel();
+    }
+    activeTopicId = firstIncompleteTopic(progress.level).id;
+
+    function openNameModal() {
+      byId("name-input").value = progress.name;
+      byId("name-error").hidden = true;
+      byId("name-modal").style.display = "flex";
+      byId("name-input").focus();
+    }
+
+    function closeNameModal() {
+      byId("name-modal").style.display = "none";
+    }
+
     function renderLevels() {
-      for (const level of ["pemula", "menengah", "mahir"]) {
-        byId(`level-${level}`).dataset.active = String(level === progress.level);
+      for (const level of LEVEL_ORDER) {
+        const button = byId(`level-${level}`);
+        if (!button.dataset.label) button.dataset.label = button.textContent;
+        const unlocked = isLevelUnlocked(level);
+        button.dataset.active = String(level === progress.level);
+        button.disabled = !unlocked;
+        button.setAttribute("aria-disabled", String(!unlocked));
+        button.textContent = unlocked ? button.dataset.label : `🔒 ${button.dataset.label}`;
       }
     }
 
     function renderTopics() {
       const container = byId("topic-list");
       container.replaceChildren();
-      for (const topic of activeLesson().topics) {
+      activeLesson().topics.forEach((topic, index) => {
+        const unlocked = isTopicUnlocked(progress.level, index);
         const button = document.createElement("button");
         button.type = "button";
         button.dataset.topicId = topic.id;
         button.dataset.active = String(topic.id === activeTopicId);
-        button.className = "rounded-md border border-border px-3 py-2 text-left text-sm";
-        button.textContent = topic.title;
+        button.className = "rounded-md border border-border px-3 py-2 text-left text-sm disabled:opacity-50";
+        button.textContent = unlocked ? topic.title : `🔒 ${topic.title}`;
+        button.disabled = !unlocked;
+        button.setAttribute("aria-disabled", String(!unlocked));
         button.addEventListener("click", () => {
+          if (!unlocked) return;
           activeTopicId = topic.id;
           byId("feedback").hidden = true;
           renderTopics();
           renderLesson();
         });
         container.append(button);
-      }
+      });
     }
 
     function renderLesson() {
@@ -220,6 +300,7 @@
     }
 
     function renderAll() {
+      byId("greeting").textContent = progress.name || "pembelajar";
       renderLevels();
       renderTopics();
       renderLesson();
@@ -227,8 +308,9 @@
     }
 
     function selectLevel(level) {
+      if (!isLevelUnlocked(level)) return;
       progress.level = level;
-      activeTopicId = LESSONS[level].topics[0].id;
+      activeTopicId = firstIncompleteTopic(level).id;
       progressStore.save(progress);
       byId("feedback").hidden = true;
       renderAll();
@@ -247,6 +329,8 @@
     }
 
     function markDone() {
+      const index = activeLesson().topics.findIndex((topic) => topic.id === activeTopicId);
+      if (!isTopicUnlocked(progress.level, index)) return;
       const key = `${progress.level}:${activeTopicId}`;
       if (!progress.completedTopics.includes(key)) {
         progress.completedTopics.push(key);
@@ -255,10 +339,12 @@
         progress.lastVisited = today();
         progressStore.save(progress);
       }
+      renderLevels();
+      renderTopics();
       renderProgress();
     }
 
-    for (const level of ["pemula", "menengah", "mahir"]) {
+    for (const level of LEVEL_ORDER) {
       byId(`level-${level}`).addEventListener("click", () => selectLevel(level));
     }
 
@@ -283,11 +369,31 @@
 
     byId("mark-done").addEventListener("click", markDone);
 
+    byId("edit-name").addEventListener("click", openNameModal);
+
+    byId("name-submit").addEventListener("click", () => {
+      const name = byId("name-input").value.trim();
+      if (!name) {
+        byId("name-error").hidden = false;
+        return;
+      }
+      progress.name = name;
+      progressStore.save(progress);
+      byId("name-error").hidden = true;
+      closeNameModal();
+      renderAll();
+    });
+
+    byId("name-input").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") byId("name-submit").click();
+    });
+
     byId("reset-progress").addEventListener("click", () => {
       progressStore.clear();
       progress = progressStore.empty();
-      activeTopicId = LESSONS[progress.level].topics[0].id;
+      activeTopicId = firstIncompleteTopic(progress.level).id;
       byId("feedback").hidden = true;
+      openNameModal();
       renderAll();
     });
 
@@ -300,6 +406,11 @@
       URL.revokeObjectURL(link.href);
     });
 
+    if (progress.name.trim()) {
+      closeNameModal();
+    } else {
+      openNameModal();
+    }
     renderAll();
   </script>
 </body>
