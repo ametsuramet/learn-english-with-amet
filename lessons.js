@@ -149,6 +149,24 @@ window.LESSONS = {
           "Satu latihan singkat di akhir.",
         ],
       },
+      {
+        id: "waktu-kata-kerja",
+        title: "Waktu Kata Kerja",
+        items: [
+          { en: "I study English every day.", meaning: "Saya belajar bahasa Inggris setiap hari.", say: "ai sta-di ing-glish ev-ri dei" },
+          { en: "I studied English yesterday.", meaning: "Saya belajar bahasa Inggris kemarin.", say: "ai sta-did ing-glish yes-ter-dei" },
+          { en: "I have studied English before.", meaning: "Saya pernah belajar bahasa Inggris.", say: "ai hav sta-did ing-glish bi-fo" },
+        ],
+        prompt: "Pilih kalimat yang tepat untuk: \"Saya belajar bahasa Inggris kemarin.\"",
+        answer: "I studied English yesterday.",
+        checks: [
+          "Apresiasi dulu usahamu.",
+          "Tunjukkan bagian yang sudah benar.",
+          "Perbaikan: pakai kata waktu kemarin, sekarang, atau sudah pernah.",
+          "Versi natural: I studied English yesterday.",
+          "Satu latihan singkat di akhir.",
+        ],
+      },
     ],
   },
   menengah: {

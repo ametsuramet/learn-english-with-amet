@@ -25,7 +25,7 @@ function unlockHarness(completedTopics = [], level = "pemula") {
   return context;
 }
 
-assert.equal(LESSONS.pemula.topics.length, 8);
+assert.equal(LESSONS.pemula.topics.length, 9);
 assert.equal(LESSONS.menengah.topics.length, 4);
 assert.equal(LESSONS.mahir.topics.length, 3);
 
