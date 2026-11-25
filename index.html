@@ -38,7 +38,7 @@
   </style>
 </head>
 <body class="min-h-screen bg-background text-foreground">
-  <div class="mx-auto max-w-5xl p-6">
+  <div id="app-content" class="mx-auto max-w-5xl p-6">
     <header class="mb-8">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -94,9 +94,9 @@
     <p class="mt-6 text-xs text-slate-400">Umpan balik di halaman ini berupa kunci jawaban statis. Tutor AI tetap tersedia lewat skill di project ini.</p>
   </div>
 
-  <div id="name-modal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4" style="display: none">
+  <div id="name-modal" class="fixed inset-0 flex items-center justify-center bg-black/50 p-4" style="display: none" role="dialog" aria-modal="true" aria-labelledby="name-modal-title">
     <div class="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-lg">
-      <h2 class="text-lg font-semibold">Kenalan dulu, yuk</h2>
+      <h2 id="name-modal-title" class="text-lg font-semibold">Kenalan dulu, yuk</h2>
       <p class="mt-1 text-sm text-slate-500">Nama ini dipakai untuk menyapamu dan disimpan di browser ini saja.</p>
       <label for="name-input" class="mt-4 block text-sm font-medium">Nama kamu</label>
       <input id="name-input" type="text" autocomplete="given-name" class="mt-1 w-full rounded-md border border-border bg-background p-3 text-sm" placeholder="Tulis namamu..." />
@@ -125,7 +125,11 @@
             level: levels.includes(parsed.level) ? parsed.level : "pemula",
             xp: Number.isFinite(parsed.xp) ? parsed.xp : 0,
             streak: Number.isFinite(parsed.streak) ? parsed.streak : 0,
-            completedTopics: Array.isArray(parsed.completedTopics) ? parsed.completedTopics : [],
+            completedTopics: Array.isArray(parsed.completedTopics)
+              ? parsed.completedTopics.filter(
+                  (key) => typeof key === "string" && levels.some((level) => key.startsWith(`${level}:`))
+                )
+              : [],
             lastVisited: typeof parsed.lastVisited === "string" ? parsed.lastVisited : "",
             preferences: parsed.preferences && typeof parsed.preferences === "object" && !Array.isArray(parsed.preferences)
               ? parsed.preferences
@@ -193,18 +197,26 @@
 
     if (!isLevelUnlocked(progress.level)) {
       progress.level = highestUnlockedLevel();
+      progressStore.save(progress);
     }
     activeTopicId = firstIncompleteTopic(progress.level).id;
 
+    let modalReturnFocus = null;
+
     function openNameModal() {
+      modalReturnFocus = document.activeElement;
       byId("name-input").value = progress.name;
       byId("name-error").hidden = true;
       byId("name-modal").style.display = "flex";
+      byId("app-content").inert = true;
       byId("name-input").focus();
     }
 
     function closeNameModal() {
       byId("name-modal").style.display = "none";
+      byId("app-content").inert = false;
+      if (modalReturnFocus && typeof modalReturnFocus.focus === "function") modalReturnFocus.focus();
+      modalReturnFocus = null;
     }
 
     function renderLevels() {

@@ -27,4 +27,10 @@ assert.match(html, /name: ""/);
 assert.match(html, /preferences: \{\}/);
 assert.doesNotMatch(html, /fetch\(/);
 
+assert.match(html, /id="app-content"/);
+assert.match(html, /role="dialog" aria-modal="true" aria-labelledby="name-modal-title"/);
+assert.match(html, /id="name-modal-title"/);
+assert.match(html, /byId\("app-content"\)\.inert = true/);
+assert.match(html, /byId\("app-content"\)\.inert = false/);
+
 console.log("PASS: learning path structural contract");
