@@ -257,6 +257,24 @@ window.LESSONS = {
           "Satu latihan singkat di akhir.",
         ],
       },
+      {
+        id: "bisnis-perdagangan",
+        title: "Bisnis dan Perdagangan",
+        items: [
+          { en: "I have a business.", meaning: "Saya punya bisnis.", say: "ai hav a biz-nis" },
+          { en: "I sell clothes.", meaning: "Saya menjual pakaian.", say: "ai sel kloz" },
+          { en: "How much is it?", meaning: "Berapa harganya?", say: "hau mach iz it" },
+        ],
+        prompt: "Terjemahkan: Saya menjual pakaian.",
+        answer: "I sell clothes.",
+        checks: [
+          "Apresiasi dulu usahamu.",
+          "Bagian yang benar: \"I sell\".",
+          "Perbaikan: gunakan \"sell\" untuk menjual, bukan \"sale\".",
+          "Versi natural: I sell clothes online.",
+          "Satu latihan singkat di akhir.",
+        ],
+      },
     ],
   },
   menengah: {

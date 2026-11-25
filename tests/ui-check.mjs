@@ -40,7 +40,7 @@ for (const level of ["pemula", "menengah", "mahir"]) {
 }
 
 const topicCount = (data.match(/id: "/g) || []).length;
-assert.equal(topicCount, 21, `expected 21 topics, got ${topicCount}`);
+assert.equal(topicCount, 22, `expected 22 topics, got ${topicCount}`);
 
 const titles = [
   "Belanja di supermarket",
@@ -57,6 +57,7 @@ const titles = [
   "Transportasi",
   "Kesehatan",
   "Parenting",
+  "Bisnis dan Perdagangan",
   "Menyatakan pendapat",
   "Membuat janji",
   "Bercerita tentang pengalaman",
