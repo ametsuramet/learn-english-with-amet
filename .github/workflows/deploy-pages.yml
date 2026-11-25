@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
   pages: write
   id-token: write
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
+      url: ${{ steps.deploy_1.outputs.page_url || steps.deploy_2.outputs.page_url || steps.deploy_3.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,32 +37,31 @@ jobs:
         with:
           path: site
 
-      - name: Wait for artifact metadata
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for attempt in 1 2 3 4 5 6; do
-            if gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
-              --jq '.artifacts[] | select(.name == "github-pages") | .id' | grep -q .; then
-              echo "Artifact metadata is visible (attempt $attempt)."
-              exit 0
-            fi
-            echo "Artifact metadata not visible yet (attempt $attempt); waiting 10s..."
-            sleep 10
-          done
-          echo "Artifact metadata did not become visible in time." >&2
-          exit 1
-
-      - name: Deploy
-        id: deployment
+      - name: Deploy (attempt 1)
+        id: deploy_1
         continue-on-error: true
         uses: actions/deploy-pages@v4
 
-      - name: Retry deploy
-        id: deployment_retry
-        if: steps.deployment.outcome == 'failure'
+      - name: Wait before retry 1
+        if: steps.deploy_1.outcome == 'failure'
+        run: sleep 15
+
+      - name: Deploy (attempt 2)
+        id: deploy_2
+        if: steps.deploy_1.outcome == 'failure'
+        continue-on-error: true
         uses: actions/deploy-pages@v4
 
-      - name: Fail if both deploys failed
-        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome != 'success'
+      - name: Wait before retry 2
+        if: steps.deploy_2.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy (attempt 3)
+        id: deploy_3
+        if: steps.deploy_2.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Fail if all deploys failed
+        if: steps.deploy_1.outcome == 'failure' && steps.deploy_2.outcome != 'success' && steps.deploy_3.outcome != 'success'
         run: exit 1

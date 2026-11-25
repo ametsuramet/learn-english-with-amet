@@ -6,38 +6,36 @@ const workflow = readFileSync(
   "utf8"
 );
 
-assert.match(
+// deploy-pages@v4 lists artifacts via the Twirp artifact service, not the REST
+// API. Polling REST gives false confidence, so the mitigation is delayed
+// retries of the Deploy action itself.
+assert.doesNotMatch(
   workflow,
-  /^\s+actions: read\s*$/m,
-  "workflow needs actions: read to poll artifact metadata"
+  /name: Wait for artifact metadata/,
+  "REST artifact polling targets a different backend than deploy-pages"
 );
 
-const uploadIndex = workflow.indexOf("name: Upload artifact");
-const waitIndex = workflow.indexOf("name: Wait for artifact metadata");
-const deployIndex = workflow.indexOf("name: Deploy\n");
-assert.ok(
-  uploadIndex >= 0 && waitIndex > uploadIndex && deployIndex > waitIndex,
-  "wait step must sit between upload and deploy"
-);
+for (const [name, id] of [
+  ["name: Deploy (attempt 1)", "id: deploy_1"],
+  ["name: Deploy (attempt 2)", "id: deploy_2"],
+  ["name: Deploy (attempt 3)", "id: deploy_3"],
+]) {
+  assert.ok(workflow.includes(name), `missing step: ${name}`);
+  assert.ok(workflow.includes(id), `missing id: ${id}`);
+}
 
-const waitStep = workflow.slice(waitIndex, deployIndex);
-assert.match(waitStep, /gh api/, "wait step must query the artifact API");
-assert.match(waitStep, /sleep/, "wait step must retry with a delay");
-
+assert.equal(
+  (workflow.match(/continue-on-error: true/g) || []).length,
+  3,
+  "every Deploy attempt must allow a later retry"
+);
+assert.match(workflow, /name: Wait before retry 1[\s\S]*?sleep 15/);
+assert.match(workflow, /name: Wait before retry 2[\s\S]*?sleep 30/);
 assert.match(
   workflow,
-  /name: Deploy[\s\S]*?continue-on-error: true/,
-  "Deploy step must allow a retry"
+  /steps\.deploy_1\.outputs\.page_url \|\| steps\.deploy_2\.outputs\.page_url \|\| steps\.deploy_3\.outputs\.page_url/,
+  "environment url must use the first successful deploy output"
 );
-assert.match(
-  workflow,
-  /name: Retry deploy[\s\S]*?steps\.deployment\.outcome == 'failure'/,
-  "retry step must run only after a failed deploy"
-);
-assert.match(
-  workflow,
-  /steps\.deployment\.outputs\.page_url \|\| steps\.deployment_retry\.outputs\.page_url/,
-  "environment url must use the successful deploy output"
-);
+assert.match(workflow, /name: Fail if all deploys failed/);
 
 console.log("PASS: deployment retry contract");
