@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
   <title>Learn English with AMET</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -158,20 +159,20 @@
         topics: [
           {
             id: "proposal",
-            title: "Menyampaikan keberatan secara halus",
+            title: "Raising objections tactfully",
             items: [
               { en: "The proposal has merit, but it warrants closer scrutiny.", meaning: "", note: "Register: business / meeting — measured and decisive." },
-              { en: "merits closer scrutiny", meaning: "", note: "Collocation, lebih tajam daripada 'needs more discussion'." },
-              { en: "before we commit", meaning: "", note: "Collocation untuk menunda keputusan tanpa terdengar obstruktif." },
+              { en: "merits closer scrutiny", meaning: "", note: "Collocation; sharper than 'needs more discussion'." },
+              { en: "before we commit", meaning: "", note: "Collocation for buying time without sounding obstructive." },
             ],
             prompt: "Rewrite in a lower-register Slack tone, keeping the same caution.",
             answer: "Let's hold off for a bit — still looks promising, but I want one more pass.",
             checks: [
-              "Precision & Style: ringkas dan tajam.",
-              "Collocations & Idiomatic Expressions: tepat sasaran.",
-              "Subtle Errors: preposisi, artikel, struktur kompleks.",
-              "Sertakan penilaian register.",
-              "Tutup dengan paraphrasing atau pertanyaan analitis.",
+              "Precision & Style: concise and forceful.",
+              "Collocations & Idiomatic Expressions: well-targeted phrasing.",
+              "Subtle Errors: prepositions, articles, complex structures.",
+              "Include a register assessment.",
+              "Close with a paraphrase or an analytical question.",
             ],
           },
         ],
@@ -356,7 +357,7 @@
       feedback.replaceChildren();
       const answer = document.createElement("div");
       answer.className = "font-medium";
-      answer.textContent = `Kunci jawaban: ${topic.answer}`;
+      answer.textContent = `${progress.level === "mahir" ? "Answer" : "Kunci jawaban"}: ${topic.answer}`;
       feedback.append(answer);
       const list = document.createElement("ul");
       list.className = "mt-2 list-disc pl-5";
