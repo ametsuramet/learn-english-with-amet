@@ -19,6 +19,8 @@ const required = [
   'id="mark-done"',
   'id="reset-progress"',
   'id="export-progress"',
+  'id="theme-toggle"',
+  'darkMode: "class"',
   "learn-english-progress-v1",
   "progressStore",
 ];
