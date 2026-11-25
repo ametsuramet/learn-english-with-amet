@@ -45,7 +45,7 @@ progres, atau aturan unlock.
   `md:hidden`, `aria-label`, `aria-expanded="false"`, dan `aria-controls="topic-sidebar"`.
   Ikon: `fa-bars`.
 - `<section id="topic-sidebar">` tetap menjadi anak `<main>`, diberi kelas drawer mobile:
-  `fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs translate-x-full overflow-y-auto`
+  `fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs -translate-x-full overflow-y-auto`
   plus transisi; pada `md` dikembalikan ke `static`, lebar penuh grid, tanpa
   `translate`, tanpa `overflow`, dan dengan border/shadow seperti sekarang.
 - Tombol close `#topic-close` ada di dalam sidebar, bersifat `md:hidden`, ikon `fa-xmark`.
@@ -57,7 +57,7 @@ progres, atau aturan unlock.
 
 - `isMobileDrawer()` memakai `window.matchMedia("(max-width: 767px)").matches`.
 - `openTopicDrawer()` (hanya saat mobile):
-  - menghapus `translate-x-full` dan menambah `translate-x-0` pada sidebar;
+  - menghapus `-translate-x-full` dan menambah `translate-x-0` pada sidebar;
   - menampilkan backdrop;
   - men-set `aria-expanded="true"` pada hamburger;
   - mencegah scroll halaman dengan `overflow-hidden` pada `<body>`;

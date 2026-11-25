@@ -4,7 +4,7 @@
 
 **Goal:** Sembunyikan sidebar topik di layar < 768px dan ganti dengan drawer kiri yang dibuka tombol hamburger, memakai satu `#topic-list` yang sama.
 
-**Architecture:** Sidebar existing diberi kelas responsive: `fixed`/`translate-x-full` di mobile dan `md:static`/`md:translate-x-0` di desktop. Satu blok fungsi di dalam inline script mengelola state buka/tutup, backdrop, scroll lock, fokus, dan breakpoint; `renderTopics()` tetap menjadi satu-satunya pengisi daftar topik. Tidak ada file JS baru, state tersimpan, atau perubahan `lessons.js`.
+**Architecture:** Sidebar existing diberi kelas responsive: `fixed`/`-translate-x-full` di mobile dan `md:static`/`md:translate-x-0` di desktop. Satu blok fungsi di dalam inline script mengelola state buka/tutup, backdrop, scroll lock, fokus, dan breakpoint; `renderTopics()` tetap menjadi satu-satunya pengisi daftar topik. Tidak ada file JS baru, state tersimpan, atau perubahan `lessons.js`.
 
 **Tech Stack:** Static HTML, Tailwind CDN (`darkMode: "class"`), Font Awesome CDN, classic `<script>` (`lessons.js`), Node `vm` + `assert` untuk tes.
 
@@ -55,7 +55,7 @@ const app = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(
 for (const token of [
   'id="topic-toggle"', 'id="topic-sidebar"', 'id="topic-close"', 'id="topic-backdrop"',
   'aria-controls="topic-sidebar"', 'aria-expanded="false"', "fa-bars", "fa-xmark",
-  "translate-x-full", "md:translate-x-0", "md:static", "z-40", "z-50",
+  "-translate-x-full", "md:translate-x-0", "md:static", "z-40", "z-50",
   "// DRAWER_BEHAVIOR_START", "// DRAWER_BEHAVIOR_END",
   'byId("topic-toggle").addEventListener("click", openTopicDrawer)',
   'byId("topic-backdrop").addEventListener("click"',
@@ -77,7 +77,7 @@ Tambahkan harness VM dengan bentuk fake DOM berikut (fokus diwakili `doc.activeE
 ```js
 function harness({ matches = true, legacyListener = false } = {}) {
   const bodyClasses = new Set();
-  const sidebarClasses = new Set(["translate-x-full"]);
+  const sidebarClasses = new Set(["-translate-x-full"]);
   const toggle = { attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, focus() { doc.activeElement = this; } };
   const close = { focus() { doc.activeElement = this; } };
   const backdrop = { hidden: true };
@@ -124,14 +124,14 @@ Tambahkan assertions (semua harus gagal sebelum implementasi):
   h.openTopicDrawer();
   assert.equal(h.backdrop.hidden, false);
   assert.ok(h.sidebarClasses.has("translate-x-0"));
-  assert.ok(!h.sidebarClasses.has("translate-x-full"));
+  assert.ok(!h.sidebarClasses.has("-translate-x-full"));
   assert.equal(h.toggle.attrs["aria-expanded"], "true");
   assert.ok(h.bodyClasses.has("overflow-hidden"));
   assert.equal(h.doc.activeElement, h.close);
 
   h.closeTopicDrawer();
   assert.equal(h.backdrop.hidden, true);
-  assert.ok(h.sidebarClasses.has("translate-x-full"));
+  assert.ok(h.sidebarClasses.has("-translate-x-full"));
   assert.equal(h.toggle.attrs["aria-expanded"], "false");
   assert.ok(!h.bodyClasses.has("overflow-hidden"));
   assert.equal(h.doc.activeElement, h.toggle);
@@ -183,7 +183,7 @@ Tambahkan di header sebelum `#theme-toggle`:
 Ganti section Topik dengan:
 
 ```html
-<section id="topic-sidebar" class="fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs translate-x-full overflow-y-auto rounded-none border-r border-border bg-card p-5 shadow-xl transition-transform duration-200 md:static md:z-auto md:w-auto md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-lg md:border md:shadow-sm">
+<section id="topic-sidebar" class="fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs -translate-x-full overflow-y-auto rounded-none border-r border-border bg-card p-5 shadow-xl transition-transform duration-200 md:static md:z-auto md:w-auto md:max-w-none md:translate-x-0 md:overflow-visible md:rounded-lg md:border md:shadow-sm">
   <div class="mb-3 flex items-center justify-between">
     <h2 class="text-lg font-semibold">Topik</h2>
     <button id="topic-close" type="button" class="rounded-md border border-border px-2 py-1 text-sm md:hidden" aria-label="Tutup daftar topik">
@@ -215,7 +215,7 @@ Sisipkan blok ini setelah blok normalisasi `if (!isLevelUnlocked(progress.level)
     function openTopicDrawer() {
       if (!isMobileDrawer()) return;
       const sidebar = byId("topic-sidebar").classList;
-      sidebar.remove("translate-x-full");
+      sidebar.remove("-translate-x-full");
       sidebar.add("translate-x-0");
       byId("topic-backdrop").hidden = false;
       byId("topic-toggle").setAttribute("aria-expanded", "true");
@@ -226,7 +226,7 @@ Sisipkan blok ini setelah blok normalisasi `if (!isLevelUnlocked(progress.level)
     function closeTopicDrawer({ returnFocus = true } = {}) {
       const sidebar = byId("topic-sidebar").classList;
       sidebar.remove("translate-x-0");
-      sidebar.add("translate-x-full");
+      sidebar.add("-translate-x-full");
       byId("topic-backdrop").hidden = true;
       byId("topic-toggle").setAttribute("aria-expanded", "false");
       document.body.classList.remove("overflow-hidden");
