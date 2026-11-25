@@ -24,7 +24,7 @@ for (const fn of [
 }
 
 assert.match(html, /name: ""/);
-assert.match(html, /preferences: \{\}/);
+assert.match(html, /preferences: \{ theme: "system" \}/);
 assert.doesNotMatch(html, /fetch\(/);
 
 assert.match(html, /id="app-content"/);

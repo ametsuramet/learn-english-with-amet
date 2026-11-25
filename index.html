@@ -126,7 +126,15 @@
 
     const progressStore = {
       empty() {
-        return { name: "", level: "pemula", xp: 0, streak: 0, completedTopics: [], lastVisited: "", preferences: {} };
+        return {
+          name: "",
+          level: "pemula",
+          xp: 0,
+          streak: 0,
+          completedTopics: [],
+          lastVisited: "",
+          preferences: { theme: "system" },
+        };
       },
       load() {
         try {
@@ -146,9 +154,14 @@
                 )
               : [],
             lastVisited: typeof parsed.lastVisited === "string" ? parsed.lastVisited : "",
-            preferences: parsed.preferences && typeof parsed.preferences === "object" && !Array.isArray(parsed.preferences)
-              ? parsed.preferences
-              : {},
+            preferences: (() => {
+              const source =
+                parsed.preferences && typeof parsed.preferences === "object" && !Array.isArray(parsed.preferences)
+                  ? parsed.preferences
+                  : {};
+              const theme = ["system", "light", "dark"].includes(source.theme) ? source.theme : "system";
+              return { ...source, theme };
+            })(),
           };
         } catch {
           return this.empty();
@@ -175,6 +188,49 @@
 
     const byId = (id) => document.getElementById(id);
     const LEVEL_ORDER = ["pemula", "menengah", "mahir"];
+
+    // THEME_HELPER_START
+    const THEME_ORDER = ["system", "light", "dark"];
+    const THEME_ICONS = { system: "fa-circle-half-stroke", light: "fa-sun", dark: "fa-moon" };
+    function themePreference(preferences) {
+      const theme =
+        typeof preferences === "string"
+          ? preferences
+          : preferences && typeof preferences === "object" && !Array.isArray(preferences)
+            ? preferences.theme
+            : undefined;
+      return THEME_ORDER.includes(theme) ? theme : "system";
+    }
+    function effectiveTheme(preference, systemDark) {
+      const mode = themePreference(preference);
+      return mode === "system" ? (systemDark ? "dark" : "light") : mode;
+    }
+    function nextTheme(preference) {
+      const index = THEME_ORDER.indexOf(themePreference(preference));
+      return THEME_ORDER[(index + 1) % THEME_ORDER.length];
+    }
+    function themeUiState(preference, systemDark) {
+      const mode = themePreference(preference);
+      const effective = effectiveTheme(mode, systemDark);
+      return { effective, icon: THEME_ICONS[mode], label: `Tema: ${mode} (${effective})` };
+    }
+    // THEME_HELPER_END
+
+    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function applyTheme() {
+      const state = themeUiState(progress.preferences, systemThemeQuery.matches);
+      document.documentElement.classList.toggle("dark", state.effective === "dark");
+      const button = byId("theme-toggle");
+      button.title = state.label;
+      button.setAttribute("aria-label", state.label);
+      button.querySelector("i").className = `fa-solid ${state.icon}`;
+    }
+
+    systemThemeQuery.addEventListener("change", () => {
+      if (themePreference(progress.preferences) === "system") applyTheme();
+    });
+
     const activeLesson = () => LESSONS[progress.level];
     const activeTopic = () => activeLesson().topics.find((t) => t.id === activeTopicId) || activeLesson().topics[0];
 
@@ -396,6 +452,12 @@
 
     byId("mark-done").addEventListener("click", markDone);
 
+    byId("theme-toggle").addEventListener("click", () => {
+      progress.preferences.theme = nextTheme(themePreference(progress.preferences));
+      progressStore.save(progress);
+      applyTheme();
+    });
+
     byId("edit-name").addEventListener("click", openNameModal);
 
     byId("name-submit").addEventListener("click", () => {
@@ -418,6 +480,7 @@
     byId("reset-progress").addEventListener("click", () => {
       progressStore.clear();
       progress = progressStore.empty();
+      applyTheme();
       activeTopicId = firstIncompleteTopic(progress.level).id;
       byId("feedback").hidden = true;
       openNameModal();
@@ -438,6 +501,7 @@
     } else {
       openNameModal();
     }
+    applyTheme();
     renderAll();
   </script>
 </body>

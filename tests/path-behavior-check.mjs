@@ -19,7 +19,12 @@ assert.ok(helperStart >= 0 && helperEnd > helperStart, "helper block not found i
 const helperSource = app.slice(helperStart, helperEnd);
 
 function unlockHarness(completedTopics = [], level = "pemula") {
-  const context = { LESSONS, progress: { completedTopics, level }, console };
+  const context = {
+    LESSONS,
+    progress: { completedTopics, level },
+    console,
+    window: { matchMedia: () => ({ matches: false, addEventListener: () => {} }) },
+  };
   vm.createContext(context);
   vm.runInContext(helperSource, context);
   return context;
@@ -107,7 +112,7 @@ assert.equal(LESSONS.mahir.topics.length, 3);
   assert.equal(loaded.level, "mahir");
   assert.equal(loaded.xp, 0);
   assert.deepEqual(Array.from(loaded.completedTopics), ["pemula:belanja"]);
-  assert.deepEqual({ ...loaded.preferences }, {});
+  assert.deepEqual({ ...loaded.preferences }, { theme: "system" });
 }
 
 console.log("PASS: learning path behavioral contract");
