@@ -39,14 +39,28 @@ for (const name of drafts) {
     assert.ok(text.includes(field), `${name} missing: ${field}`);
   }
 
+  const body = text.replace(/<!--[\s\S]*?-->/g, "");
+  const itemCount = (body.match(/^- en:/gm) || []).length;
+  assert.equal(itemCount, 3, `${name} must have exactly three lesson items, got ${itemCount}`);
+
   const level = text.match(/^Level:\s*(\S+)\s*$/m)?.[1];
   assert.ok(allowedLevels.includes(level), `${name} has invalid Level: ${level}`);
 
-  assert.match(text, /^- en:/m, `${name} has no lesson item`);
-
   if (level === "mahir") {
-    assert.doesNotMatch(text, /Arti:/, `${name} (mahir) must not use Arti:`);
-    assert.doesNotMatch(text, /cara baca/, `${name} (mahir) must not use cara baca`);
+    assert.doesNotMatch(body, /Arti:/, `${name} (mahir) must not use Arti:`);
+    assert.doesNotMatch(body, /cara baca/, `${name} (mahir) must not use cara baca`);
+    const meanings = body.match(/^  meaning:.*$/gm) || [];
+    assert.ok(
+      meanings.every((line) => line === '  meaning: ""'),
+      `${name} (mahir) must leave every meaning empty`
+    );
+    for (const lens of [
+      "Precision & Style",
+      "Collocations & Idiomatic Expressions",
+      "Subtle Errors",
+    ]) {
+      assert.ok(body.includes(lens), `${name} (mahir) missing lens: ${lens}`);
+    }
   }
 }
 

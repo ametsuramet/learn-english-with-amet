@@ -28,7 +28,7 @@ Tujuh label ini harus ada dan tidak diganti:
 
 - **pemula**: setiap item memuat `en` / `meaning` / `say`; penjelasan dan koreksi dalam bahasa Indonesia santai; koreksi berurutan apresiasi → bagian benar → perbaikan + alasan singkat → versi natural; tutup satu latihan singkat.
 - **menengah**: setiap item memuat `en` / `meaning` / `note`; 2–3 kosakata/phrasal verb/idiom dengan konteks; koreksi berlabel **Perbaikan Grammar** → **Versi Lebih Natural** → **Penjelasan Singkat**; tutup pertanyaan terbuka/skenario untuk jawaban 3–4 kalimat.
-- **mahir**: setiap item memuat `en` / `meaning: ""` / `note`; koreksi memakai *Precision & Style* → *Collocations & Idiomatic Expressions* → *Subtle Errors*; sertakan register; tutup simulasi/debat atau tantangan *paraphrasing*. Hapus blok contoh level lain dari template.
+- **mahir**: setiap item memuat `en` / `meaning: ""` / `note`; koreksi memakai *Precision & Style* → *Collocations & Idiomatic Expressions* → *Subtle Errors*; sertakan register; tutup simulasi/debat atau tantangan *paraphrasing*. Hapus blok contoh level lain dari template. Konvensi ini sengaja mempersempit tiga pengecualian bahasa Indonesia pada skill mahir: draf tidak memuat catatan atau terjemahan Indonesia.
 
 Label field di atas adalah metadata tetap dan boleh tetap dalam bahasa Indonesia. Untuk `mahir`, semua isi di dalam bagian — item, catatan, latihan, kunci jawaban, dan checklist — wajib bahasa Inggris.
 
@@ -43,4 +43,4 @@ Label field di atas adalah metadata tetap dan boleh tetap dalam bahasa Indonesia
 
 ## Tes
 
-`node tests/materi-check.mjs` menolak draf tanpa field wajib, `Level:` di luar tiga nilai yang diizinkan, tanpa item `- en:`, draf mahir yang memakai `Arti:` atau `cara baca`, dan referensi `materi-baru/` di `index.html` atau `lessons.js`.
+`node tests/materi-check.mjs` mengabaikan teks di dalam komentar HTML, lalu menolak draf tanpa field wajib, `Level:` di luar tiga nilai yang diizinkan, jumlah item `- en:` bukan tepat tiga, draf mahir yang memakai `Arti:`, `cara baca`, `meaning:` terisi, atau tanpa ketiga label koreksi tingkat lanjut, serta referensi `materi-baru/` di `index.html` atau `lessons.js`. Pemeriksaan ini dijalankan manual saat penggabungan; workflow Pages tidak menjalankan tes.
