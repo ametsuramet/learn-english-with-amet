@@ -1,4 +1,4 @@
-# learn-english
+# Learn English with AMET
 
 Project belajar bahasa Inggris dengan tiga tutor bertingkat. File ini hanya mengatur pemilihan tutor; aturan mengajar ada di masing-masing skill.
 
