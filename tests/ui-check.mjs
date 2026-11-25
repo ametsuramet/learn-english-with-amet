@@ -40,7 +40,7 @@ for (const level of ["pemula", "menengah", "mahir"]) {
 }
 
 const topicCount = (data.match(/id: "/g) || []).length;
-assert.equal(topicCount, 22, `expected 22 topics, got ${topicCount}`);
+assert.equal(topicCount, 27, `expected 27 topics, got ${topicCount}`);
 
 const titles = [
   "Belanja di supermarket",
@@ -62,6 +62,11 @@ const titles = [
   "Membuat janji",
   "Bercerita tentang pengalaman",
   "Meminta bantuan di kantor",
+  "Memberi feedback",
+  "Small talk di kantor",
+  "Menolak dengan sopan",
+  "Menulis email tindak lanjut",
+  "Negosiasi dalam bisnis dan perdagangan",
   "Raising objections tactfully",
   "Negotiating scope",
   "Academic hedging",
