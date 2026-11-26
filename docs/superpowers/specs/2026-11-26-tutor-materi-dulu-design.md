@@ -45,9 +45,9 @@ materi dan latihan tetap disesuaikan dengan level.
 
 ### Wizard lima langkah (struktur sama di ketiga skill)
 
-Setiap topik baru disajikan satu tahap per layar `question`. Isi tahap berikutnya tidak
-boleh muncul di layar sebelumnya. Teks step ditulis sebagai teks polos, tanpa penanda
-markdown, karena tool `question` menampilkannya apa adanya.
+Setiap topik baru disajikan satu tahap per pesan chat (markdown). Isi tahap berikutnya
+tidak boleh muncul sebelum pengguna memilih opsi lanjut. Tool `question` hanya memuat
+pertanyaan keputusan singkat dan opsinya.
 
 1. **Step 1 — Pengantar (Indonesia).** 1–2 kalimat: topik, mengapa penting, dan latihan
    apa yang akan dilakukan. Opsi singkat: `Lanjut ke materi`. Tidak ada pertanyaan latihan.

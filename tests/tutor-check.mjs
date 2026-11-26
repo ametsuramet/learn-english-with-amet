@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 const read = (id) =>
   readFileSync(new URL(`../.opencode/skills/${id}/SKILL.md`, import.meta.url), "utf8");
 
+const agents = readFileSync(new URL("../AGENTS.md", import.meta.url), "utf8");
+
 const skills = {
   pemula: read("tutor-inggris-pemula"),
   menengah: read("tutor-inggris-intermediate"),
@@ -23,8 +25,8 @@ const required = [
   "Lanjut ke latihan",
   "tool `question`",
   "Jika pengguna bertanya di tengah wizard",
-  "teks polos",
-  "pemisah",
+  "pesan chat",
+  "hanya untuk satu pertanyaan keputusan",
 ];
 
 const stepOrder = [
@@ -56,6 +58,8 @@ for (const [level, text] of Object.entries(skills)) {
   assert.doesNotMatch(text, /Akhiri setiap respons/i, `${level}: no per-response exercise`);
   assert.doesNotMatch(text, /Respons diakhiri .*tanpa latihan/i, `${level}: no per-response exercise`);
 }
+
+assert.match(agents, /question[`']? hanya/i, "AGENTS.md must keep question for decisions only");
 
 assert.match(skills.pemula, /jenis kata/i, "pemula must name the word class simply");
 assert.match(skills.menengah, /kelas kata/i, "menengah must name the word class");

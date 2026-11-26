@@ -17,5 +17,5 @@ Muat skill yang cocok sebelum menjawab. Jika level tidak disebut, tanyakan dulu.
 - Skill disimpan di `.opencode/skills/<id>/SKILL.md`, hanya di project ini, tanpa pemasangan global.
 - Detail koreksi, kosakata, dan latihan penutup bersumber dari `SKILL.md` masing-masing.
 - Materi baru dari sesi tutor: lihat `docs/agents/materi-dari-sesi.md`.
-- Setiap kali agent butuh jawaban—baik klarifikasi, keputusan, maupun latihan lesson—sajikan lewat tool `question` (form interaktif TUI), bukan teks biasa. Untuk latihan, berikan satu opsi singkat dan biarkan jawaban diketik lewat kolom bebas.
+- Materi, pengantar, kosakata, dan contoh ditampilkan sebagai pesan chat biasa (markdown), bukan di dalam popup. Tool `question` hanya untuk meminta jawaban: klarifikasi, keputusan, atau latihan lesson. Untuk latihan, berikan satu opsi singkat dan biarkan jawaban diketik lewat kolom bebas.
 - Design dan rencana berada di `docs/superpowers/`.
