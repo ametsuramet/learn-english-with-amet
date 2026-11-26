@@ -37,7 +37,7 @@ step berikutnya sebelum pengguna memilih opsi lanjut. Gunakan tool `question` un
 ### Step 3 — Contoh
 
 - 2–3 kalimat kontekstual yang memakai item materi.
-- Contoh berbahasa Inggris; catatan nuansa tetap berbahasa Inggris.
+- Contoh berbahasa Inggris; catatan nuansa dalam bahasa Indonesia.
 - Opsi singkat: `Lanjut ke latihan`.
 
 ### Step 4 — Latihan

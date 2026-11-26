@@ -62,5 +62,6 @@ assert.doesNotMatch(skills.lanjut, /Seluruh respons dalam bahasa Inggris/);
 assert.match(skills.lanjut, /Pengantar[\s\S]{0,120}bahasa Indonesia/i);
 assert.match(skills.lanjut, /Penjelasan materi[\s\S]{0,80}bahasa Indonesia/i);
 assert.match(skills.lanjut, /Materi[\s\S]{0,120}Inggris/i);
+assert.match(skills.lanjut, /catatan nuansa[\s\S]{0,40}bahasa Indonesia/i);
 
 console.log("PASS: tutor wizard contract");
