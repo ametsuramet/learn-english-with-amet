@@ -43,24 +43,26 @@ materi dan latihan tetap disesuaikan dengan level.
 
 ## Design
 
-### Wizard empat langkah (struktur sama di ketiga skill)
+### Wizard lima langkah (struktur sama di ketiga skill)
 
 Setiap topik baru disajikan satu tahap per layar `question`. Isi tahap berikutnya tidak
-boleh muncul di layar sebelumnya.
+boleh muncul di layar sebelumnya. Teks step ditulis sebagai teks polos, tanpa penanda
+markdown, karena tool `question` menampilkannya apa adanya.
 
 1. **Step 1 — Pengantar (Indonesia).** 1–2 kalimat: topik, mengapa penting, dan latihan
    apa yang akan dilakukan. Opsi singkat: `Lanjut ke materi`. Tidak ada pertanyaan latihan.
 2. **Step 2 — Materi.** 2–3 item inti. Setiap item memuat frasa/kata Inggris, makna atau
-   nuansa, dan catatan register/penggunaan. Pemula menambahkan cara baca. Opsi singkat:
-   `Lanjut ke contoh`.
-3. **Step 3 — Contoh.** 2–3 kalimat kontekstual yang memakai item materi. Pemula
-   menambahkan arti; Menengah menambahkan catatan nuansa; Lanjut tetap Inggris. Opsi
-   singkat: `Lanjut ke latihan`.
-4. **Step 4 — Latihan.** Tepat satu tugas setelah materi dan contoh. Sajikan lewat tool
-   `question` dengan satu opsi singkat (misalnya `Give me a hint`) dan biarkan jawaban
-   diketik lewat kolom bebas.
+   nuansa, dan catatan penggunaan. Opsi singkat: `Lanjut ke kosakata`.
+3. **Step 3 — Kosakata.** 3–5 kata sulit dari Step 2 dibedah: arti bahasa Indonesia,
+   kelas kata, kolokasi, dan satu contoh pendek. Opsi singkat: `Lanjut ke contoh`.
+4. **Step 4 — Contoh.** 2–3 kalimat kontekstual yang memakai item materi. Pemula
+   menambahkan terjemahan; Menengah dan Lanjut menambahkan catatan nuansa dalam bahasa
+   Indonesia. Opsi singkat: `Lanjut ke latihan`.
+5. **Step 5 — Latihan.** Tepat satu tugas setelah materi, kosakata, dan contoh. Sajikan
+   lewat tool `question` dengan satu opsi singkat (misalnya `Give me a hint`) dan biarkan
+   jawaban diketik lewat kolom bebas.
 
-**Umpan balik** hanya muncul setelah pengguna menjawab Step 4, memakai format level
+**Umpan balik** hanya muncul setelah pengguna menjawab Step 5, memakai format level
 masing-masing. Jika pengguna bertanya di tengah wizard, jawab pertanyaannya, lalu tawarkan
 kembali tahap yang sedang berjalan.
 
@@ -70,9 +72,8 @@ kembali tahap yang sedang berjalan.
   cara baca; contoh disertai terjemahan.
 - **Menengah (B1–B2):** pengantar dan penjelasan nuansa bahasa Indonesia; contoh dan
   latihan bahasa Inggris; koreksi memakai tiga bagian yang sudah ada.
-- **Lanjut (C1–C2):** pengantar bahasa Indonesia; materi, contoh, latihan, dan umpan balik
-  bahasa Inggris; bahasa Indonesia hanya untuk padanan istilah, nuansa budaya, atau
-  perbandingan langsung.
+- **Lanjut (C1–C2):** pengantar dan penjelasan materi dalam bahasa Indonesia; frasa target,
+  contoh, latihan, dan umpan balik bahasa Inggris; catatan nuansa boleh bahasa Indonesia.
 
 ### Pengecualian
 

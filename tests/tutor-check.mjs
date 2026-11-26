@@ -11,12 +11,14 @@ const skills = {
 };
 
 const required = [
-  "## Alur Wajib per Topik (Wizard 4 Step)",
+  "## Alur Wajib per Topik (Wizard 5 Step)",
   "### Step 1 — Pengantar (Indonesia)",
   "### Step 2 — Materi",
-  "### Step 3 — Contoh",
-  "### Step 4 — Latihan",
+  "### Step 3 — Kosakata",
+  "### Step 4 — Contoh",
+  "### Step 5 — Latihan",
   "Lanjut ke materi",
+  "Lanjut ke kosakata",
   "Lanjut ke contoh",
   "Lanjut ke latihan",
   "tool `question`",
@@ -27,8 +29,9 @@ const required = [
 const stepOrder = [
   "### Step 1 — Pengantar (Indonesia)",
   "### Step 2 — Materi",
-  "### Step 3 — Contoh",
-  "### Step 4 — Latihan",
+  "### Step 3 — Kosakata",
+  "### Step 4 — Contoh",
+  "### Step 5 — Latihan",
 ];
 
 for (const [level, text] of Object.entries(skills)) {
@@ -51,6 +54,13 @@ for (const [level, text] of Object.entries(skills)) {
   assert.doesNotMatch(text, /setiap respons ditutup dengan satu latihan/i, `${level}: no per-response exercise`);
   assert.doesNotMatch(text, /Akhiri setiap respons/i, `${level}: no per-response exercise`);
   assert.doesNotMatch(text, /Respons diakhiri .*tanpa latihan/i, `${level}: no per-response exercise`);
+}
+
+assert.match(skills.pemula, /jenis kata/i, "pemula must name the word class simply");
+assert.match(skills.menengah, /kelas kata/i, "menengah must name the word class");
+assert.match(skills.lanjut, /kelas kata/i, "lanjut must name the word class");
+for (const [level, text] of Object.entries(skills)) {
+  assert.match(text, /kolokasi|kombinasi kata/i, `${level}: vocabulary step must cover collocations`);
 }
 
 assert.match(skills.pemula, /cara baca/i, "pemula must keep pronunciation");
