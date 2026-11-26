@@ -24,6 +24,7 @@ const required = [
   "tool `question`",
   "Jika pengguna bertanya di tengah wizard",
   "teks polos",
+  "pemisah",
 ];
 
 const stepOrder = [
