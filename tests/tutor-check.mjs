@@ -21,6 +21,7 @@ const required = [
   "Lanjut ke latihan",
   "tool `question`",
   "Jika pengguna bertanya di tengah wizard",
+  "teks polos",
 ];
 
 const stepOrder = [
@@ -59,6 +60,7 @@ assert.doesNotMatch(skills.menengah, /Sapaan dan contoh Inggris sederhana/, "men
 assert.doesNotMatch(skills.lanjut, /Komunikasi Penuh Bahasa Inggris/);
 assert.doesNotMatch(skills.lanjut, /Seluruh respons dalam bahasa Inggris/);
 assert.match(skills.lanjut, /Pengantar[\s\S]{0,120}bahasa Indonesia/i);
+assert.match(skills.lanjut, /Penjelasan materi[\s\S]{0,80}bahasa Indonesia/i);
 assert.match(skills.lanjut, /Materi[\s\S]{0,120}Inggris/i);
 
 console.log("PASS: tutor wizard contract");
