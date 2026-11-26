@@ -43,7 +43,7 @@
 - Consumes: tidak ada kode runtime; hanya teks skill dan `readFileSync`.
 - Produces: struktur markdown yang sama di ketiga skill; tidak ada fungsi atau tipe yang dipakai task lain.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Buat `tests/tutor-check.mjs`:
 
@@ -92,12 +92,12 @@ assert.match(skills.lanjut, /Materi[\s\S]{0,120}Inggris/i);
 console.log("PASS: tutor wizard contract");
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `node tests/tutor-check.mjs`
 Expected: FAIL with `pemula: missing ## Alur Wajib per Topik (Wizard 4 Step)`.
 
-- [ ] **Step 3: Add the shared wizard block and adjust language rules**
+- [x] **Step 3: Add the shared wizard block and adjust language rules**
 
 Sisipkan blok berikut setelah `## Aturan Utama` di **setiap** skill, dengan baris khusus level menggantikan `{LEVEL_LINE_2}` dan `{LEVEL_LINE_3}`:
 
@@ -158,7 +158,7 @@ Perbarui juga Quick Reference:
 - **Menengah:** baris pertama menjadi `Pengantar topik dalam bahasa Indonesia; contoh dan latihan dalam bahasa Inggris sederhana; nuansa dan alasan dalam bahasa Indonesia.`
 - **Lanjut:** baris pertama menjadi `Pengantar dalam bahasa Indonesia; materi, contoh, latihan, dan umpan balik dalam bahasa Inggris; bahasa Indonesia hanya untuk tiga pengecualian yang disebut di Aturan 1.`
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 
@@ -168,7 +168,7 @@ node tests/tutor-check.mjs && node tests/drawer-check.mjs && node tests/theme-ch
 
 Expected: 8 baris `PASS`, tanpa error.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/tutor-check.mjs .opencode/skills/tutor-inggris-pemula/SKILL.md .opencode/skills/tutor-inggris-intermediate/SKILL.md .opencode/skills/tutor-inggris-advanced/SKILL.md docs/superpowers/specs/2026-11-26-tutor-materi-dulu-design.md docs/superpowers/plans/2026-11-26-tutor-materi-dulu.md

@@ -47,15 +47,17 @@ setiap step.
 - Sajikan lewat tool `question`: satu opsi singkat (misalnya `Beri petunjuk` atau `Give me a hint`) dan biarkan jawaban diketik lewat kolom bebas.
 - Umpan balik baru diberikan setelah jawaban masuk, memakai format level ini.
 
-Jika pengguna bertanya di tengah wizard, jawab pertanyaannya, lalu tawarkan kembali tahap yang sedang berjalan.
+Jika pengguna bertanya di tengah wizard, jawab pertanyaannya, lalu tawarkan kembali tahap yang sedang berjalan. Ketik "lanjut" atau memilih opsi lanjut sama-sama memajukan ke step berikutnya.
+
+Pertanyaan singkat di luar topik course boleh dijawab langsung tanpa wizard, lalu ditutup dengan satu latihan kecil bila relevan. Jika pengguna meminta topik berikutnya, mulai lagi dari Step 1.
 
 ## Quick Reference — bentuk respons
 
 1. Pengantar dalam bahasa Indonesia; materi, contoh, latihan, dan umpan balik dalam bahasa Inggris; bahasa Indonesia hanya untuk tiga pengecualian yang disebut di Aturan 1.
 2. Umpan balik memakai tiga lensa berlabel: Precision & Style → Collocations & Idiomatic Expressions → Subtle Errors.
 3. Sertakan penilaian register: bisnis, akademis, persuasif, atau kasual, dan kecocokannya.
-4. Sertakan satu ajakan simulasi, studi kasus, atau debat singkat.
-5. Tutup dengan satu pertanyaan analitis atau tantangan *paraphrasing* bergaya lain.
+4. Sertakan satu ajakan simulasi, studi kasus, atau debat singkat sebagai bagian dari Step 4.
+5. Tutup sesi di Step 4 dengan satu pertanyaan analitis atau tantangan *paraphrasing* bergaya lain.
 
 ## Common Mistakes
 
@@ -65,4 +67,4 @@ Jika pengguna bertanya di tengah wizard, jawab pertanyaannya, lalu tawarkan kemb
 | Memakai format koreksi pemula/menengah | Tiga lensa tingkat lanjut berlabel eksplisit |
 | Hanya memperbaiki grammar tanpa menyentuh diksi atau nada | Evaluasi presisi, kolokasi, dan register secara terpisah |
 | Tidak ada ajakan berpikir langsung | Satu simulasi, studi kasus, atau debat singkat |
-| Respons berakhir dengan penutup sopan biasa | Satu pertanyaan analitis atau tantangan *paraphrasing* |
+| Step 4 tidak memberi tantangan setelah materi | Satu pertanyaan analitis atau tantangan *paraphrasing* |
